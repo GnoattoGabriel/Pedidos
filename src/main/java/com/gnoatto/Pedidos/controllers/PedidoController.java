@@ -4,6 +4,7 @@ package com.gnoatto.Pedidos.controllers;
 import com.gnoatto.Pedidos.models.PedidoModel;
 import com.gnoatto.Pedidos.services.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,28 +18,33 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @PostMapping
-    public PedidoModel criarPedido(@RequestBody PedidoModel pedidoNovo){
-        return pedidoService.criarPedido(pedidoNovo);
+    public ResponseEntity<PedidoModel> criarPedido(@RequestBody PedidoModel pedidoNovo){
+        PedidoModel pedido = pedidoService.criarPedido(pedidoNovo);
+        return ResponseEntity.status(201).body(pedido);
     }
 
     @GetMapping
-    public List<PedidoModel> buscarTodosPedido(){
-        return pedidoService.findAll();
+    public ResponseEntity<List<PedidoModel>> buscarTodosPedido(){
+        return ResponseEntity.ok(pedidoService.findAll());
     }
 
     @DeleteMapping("/{id}")
-    public void deletarPedido(@PathVariable Long id){
+    public ResponseEntity<?> deletarPedido(@PathVariable Long id){
         pedidoService.deletarPedido(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}")
-    public Optional<PedidoModel> buscarPorId(@PathVariable Long id){
-        return pedidoService.buscarPorId(id);
+    public ResponseEntity<PedidoModel> buscarPorId(@PathVariable Long id){
+        return pedidoService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
-    public PedidoModel atualizarPedido(@PathVariable Long id,@RequestBody PedidoModel pedidoNovo){
-        return pedidoService.atualizarPedido(id, pedidoNovo);
+    public ResponseEntity<PedidoModel> atualizarPedido(@PathVariable Long id,@RequestBody PedidoModel pedidoNovo){
+        PedidoModel pedido = pedidoService.atualizarPedido(id, pedidoNovo);
+        return ResponseEntity.ok(pedido);
     }
 
 }
